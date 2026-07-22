@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { Providers } from '@/components/Providers';
 import { Navbar } from '@/components/Navbar';
+import { SessionTimeout } from '@/components/SessionTimeout';
+import { Chatbot } from '@/components/Chatbot';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -91,8 +93,10 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-secondary-100`}>
         <Providers>
+          <SessionTimeout />
           <Navbar />
           {children}
+          <Chatbot />
         </Providers>
       </body>
     </html>

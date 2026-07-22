@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 
-const SPECIALIZATIONS = ['RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'LAND'] as const;
+const SPECIALIZATIONS = ['LOT_ONLY', 'HOUSE_AND_LOT', 'FARM_LOT', 'COMMERCIAL', 'BEACHFRONT', 'CONDOMINIUM', 'TOWNHOUSE', 'MIXED_USE', 'INDUSTRIAL', 'LAND', 'RESIDENTIAL', 'CONDO', 'APARTMENT'] as const;
 
 interface BrokerProfile {
   name: string;
@@ -41,6 +41,13 @@ export default function DashboardProfilePage() {
   const [saved, setSaved] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -208,6 +215,77 @@ export default function DashboardProfilePage() {
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
+  }
+
+  async function handlePasswordChange() {
+    setPasswordError(null);
+    setPasswordSuccess(false);
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('All fields are required');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters');
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      setPasswordError('Must contain at least one uppercase letter');
+      return;
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      setPasswordError('Must contain at least one lowercase letter');
+      return;
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      setPasswordError('Must contain at least one number');
+      return;
+    }
+
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      setPasswordError('Must contain at least one special character');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setPasswordError('New password must be different from current password');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPasswordError(data.error || 'Failed to change password');
+        return;
+      }
+
+      setPasswordSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch {
+      setPasswordError('Network error. Please try again.');
+    } finally {
+      setChangingPassword(false);
+    }
   }
 
   async function handleSave() {
@@ -489,6 +567,78 @@ export default function DashboardProfilePage() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-secondary-900 dark:text-white mb-6">
+                Change Password
+              </h3>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full border border-secondary-300 dark:border-secondary-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Enter current password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full border border-secondary-300 dark:border-secondary-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Enter new password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full border border-secondary-300 dark:border-secondary-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
+
+              <p className="text-xs text-secondary-400 dark:text-secondary-500 mt-2 mb-4">
+                Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character.
+              </p>
+
+              {passwordError && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 mb-4">
+                  <p className="text-sm text-red-600 dark:text-red-400">{passwordError}</p>
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-4 py-3 mb-4">
+                  <p className="text-sm text-green-600 dark:text-green-400">Password changed successfully!</p>
+                </div>
+              )}
+
+              <button
+                onClick={handlePasswordChange}
+                disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+                className="bg-secondary-600 text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-secondary-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                {changingPassword && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                )}
+                {changingPassword ? 'Changing...' : 'Change Password'}
+              </button>
             </div>
 
             <div className="flex justify-end">
