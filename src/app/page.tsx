@@ -9,6 +9,54 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateAgent',
+            name: 'Philippine Skyland MGT and DEVT OPC (PPSMDO)',
+            description: 'Licensed real estate broker and appraiser. Enterprise-grade property management platform for Philippine real estate professionals.',
+            url: 'https://philippine-skyland.vercel.app',
+            telephone: '+639174722107',
+            email: 'nelsonaczon@gmail.com',
+            address: {
+              '@type': 'PostalAddress',
+              addressCountry: 'PH',
+            },
+            areaServed: {
+              '@type': 'Country',
+              name: 'Philippines',
+            },
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: 'Real Estate Services',
+              itemListElement: [
+                {
+                  '@type': 'Offer',
+                  itemOffered: {
+                    '@type': 'Service',
+                    name: 'Property Brokerage',
+                    description: 'Licensed real estate brokerage services for buying, selling, and leasing properties in the Philippines.',
+                  },
+                },
+                {
+                  '@type': 'Offer',
+                  itemOffered: {
+                    '@type': 'Service',
+                    name: 'Property Appraisal',
+                    description: 'Professional property appraisal and valuation services by PRC-licensed appraisers.',
+                  },
+                },
+              ],
+            },
+            founder: {
+              '@type': 'Person',
+              name: 'Nelson Aczon',
+            },
+          }),
+        }}
+      />
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">

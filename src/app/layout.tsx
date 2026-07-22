@@ -7,26 +7,59 @@ import { Navbar } from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Philippine Skyland MGT and DEVT OPC (PPSMDO) - Licensed Real Estate Broker and Appraiser | Nelson Aczon',
-  description: 'Philippine Skyland MGT and DEVT OPC (PPSMDO) - Licensed real estate broker and appraiser. Property appraisal management platform for Philippine real estate professionals.',
-  keywords: ['real estate', 'broker', 'appraiser', 'Philippines', 'property', 'license', 'Nelson Aczon', 'PPSMDO', 'Philippine Skyland'],
+  title: {
+    default: 'Philippine Skyland MGT and DEVT OPC (PPSMDO) - Licensed Real Estate Broker and Appraiser | Nelson Aczon',
+    template: '%s | Philippine Skyland',
+  },
+  description: 'Enterprise-grade real estate platform for licensed Philippine brokers and appraisers. Manage properties, track transactions, handle appraisals, and grow your client base. Contact Globe +63 917 472 2107 or Smart +63 960 477 4147.',
+  keywords: [
+    'real estate broker Philippines', 'licensed real estate appraiser', 'property management Philippines',
+    'Nelson Aczon', 'PPSMDO', 'Philippine Skyland', 'real estate platform', 'property appraisal',
+    'Manila real estate', 'Cebu properties', 'Davao real estate', 'Philippine property',
+    'broker license Philippines', 'PRC licensed broker', 'real estate transaction tracking',
+  ],
   authors: [{ name: 'Nelson Aczon' }],
+  creator: 'Nelson Aczon',
+  publisher: 'Philippine Skyland MGT and DEVT OPC (PPSMDO)',
+  metadataBase: new URL('https://philippine-skyland.vercel.app'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_PH',
-    url: process.env.NEXT_PUBLIC_APP_URL,
+    url: 'https://philippine-skyland.vercel.app',
     siteName: 'Philippine Skyland MGT and DEVT OPC (PPSMDO)',
-    title: 'Philippine Skyland MGT and DEVT OPC (PPSMDO) - Licensed Real Estate Broker and Appraiser',
-    description: 'Licensed real estate broker and appraiser. Property appraisal management platform.',
+    title: 'Philippine Skyland - Licensed Real Estate Broker and Appraiser Platform',
+    description: 'Enterprise-grade real estate platform for licensed Philippine brokers and appraisers. Manage properties, track transactions, and grow your client base.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Philippine Skyland MGT and DEVT OPC',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Philippine Skyland MGT and DEVT OPC (PPSMDO) - Licensed Real Estate Broker and Appraiser',
-    description: 'Licensed real estate broker and appraiser. Property appraisal management platform.',
+    title: 'Philippine Skyland - Licensed Real Estate Broker and Appraiser',
+    description: 'Enterprise-grade real estate platform for licensed Philippine brokers and appraisers.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
   },
 };
 
