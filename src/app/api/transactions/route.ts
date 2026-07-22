@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { apiLimiter } from '@/lib/rate-limit';
+import { transactionSchema } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,8 +35,8 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           property: true,
-          broker: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } },
-          client: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } },
+          broker: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
+          client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -73,6 +74,16 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json();
     
+    const validation = transactionSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input provided' },
+        { status: 400 }
+      );
+    }
+    
+    const validatedData = validation.data;
+    
     const brokerProfile = await prisma.brokerProfile.findUnique({
       where: { userId: (session.user as any).id },
     });
@@ -81,18 +92,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Broker profile not found' }, { status: 404 });
     }
     
-    const commission = body.amount * (body.commissionRate / 100);
+    const commission = validatedData.amount * (validatedData.commissionRate / 100);
     
     const transaction = await prisma.transaction.create({
       data: {
-        propertyId: body.propertyId,
+        propertyId: validatedData.propertyId,
         brokerId: brokerProfile.id,
-        clientId: body.clientId,
-        type: body.type,
-        amount: body.amount,
+        clientId: validatedData.clientId,
+        type: validatedData.type,
+        amount: validatedData.amount,
         commission,
-        commissionRate: body.commissionRate,
-        notes: body.notes,
+        commissionRate: validatedData.commissionRate,
+        notes: validatedData.notes,
       },
       include: {
         property: true,

@@ -10,7 +10,7 @@ interface LogEntry {
 }
 
 function sanitizeLogData(data: Record<string, unknown>): Record<string, unknown> {
-  const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization'];
+  const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'email', 'phone', 'clientEmail', 'clientPhone'];
   const sanitized: Record<string, unknown> = {};
   
   for (const [key, value] of Object.entries(data)) {

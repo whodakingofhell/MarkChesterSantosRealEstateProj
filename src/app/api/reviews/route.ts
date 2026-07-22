@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { apiLimiter } from '@/lib/rate-limit';
+import { reviewSchema } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,33 +56,43 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
+    const validation = reviewSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input provided' },
+        { status: 400 }
+      );
+    }
+    
+    const validatedData = validation.data;
+    
     const review = await prisma.review.create({
       data: {
-        brokerId: body.professionalType === 'broker' ? body.professionalId : null,
-        appraiserId: body.professionalType === 'appraiser' ? body.professionalId : null,
-        clientName: body.clientName,
-        clientEmail: body.clientEmail,
-        rating: body.rating,
-        comment: body.comment,
+        brokerId: validatedData.professionalType === 'broker' ? validatedData.professionalId : null,
+        appraiserId: validatedData.professionalType === 'appraiser' ? validatedData.professionalId : null,
+        clientName: validatedData.clientName,
+        clientEmail: validatedData.clientEmail,
+        rating: validatedData.rating,
+        comment: validatedData.comment,
       },
     });
     
     const reviews = await prisma.review.findMany({
-      where: body.professionalType === 'broker'
-        ? { brokerId: body.professionalId }
-        : { appraiserId: body.professionalId },
+      where: validatedData.professionalType === 'broker'
+        ? { brokerId: validatedData.professionalId }
+        : { appraiserId: validatedData.professionalId },
     });
     
     const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
     
-    if (body.professionalType === 'broker') {
+    if (validatedData.professionalType === 'broker') {
       await prisma.brokerProfile.update({
-        where: { id: body.professionalId },
+        where: { id: validatedData.professionalId },
         data: { averageRating: avgRating, totalReviews: reviews.length },
       });
     } else {
       await prisma.appraiserProfile.update({
-        where: { id: body.professionalId },
+        where: { id: validatedData.professionalId },
         data: { averageRating: avgRating, totalReviews: reviews.length },
       });
     }

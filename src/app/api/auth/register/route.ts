@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const validation = registerSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validation.error.errors },
+        { error: 'Invalid input provided' },
         { status: 400 }
       );
     }
@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Registration successful.',
-      userId: user.id,
     });
     
   } catch (error) {

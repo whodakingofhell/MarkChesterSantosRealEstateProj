@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TurnstileWidget } from './Turnstile';
 
 interface ContactFormProps {
@@ -25,53 +25,9 @@ export function ContactForm({
   });
   
   const [turnstileToken, setTurnstileToken] = useState('');
-  const [hmacSignature, setHmacSignature] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [clientTimestamp, setClientTimestamp] = useState(0);
-  
-  // Set client timestamp on mount
-  useEffect(() => {
-    setClientTimestamp(Date.now());
-  }, []);
-  
-  // Generate HMAC signature
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.crypto) {
-      const generateHmac = async () => {
-        const payload = {
-          professionalId,
-          clientEmail: formData.clientEmail,
-          subject: formData.subject,
-          message: formData.message,
-          clientTimestamp,
-        };
-        
-        const encoder = new TextEncoder();
-        const keyData = encoder.encode(process.env.NEXT_PUBLIC_HMAC_SECRET || '');
-        
-        const key = await window.crypto.subtle.importKey(
-          'raw',
-          keyData,
-          { name: 'HMAC', hash: 'SHA-256' },
-          false,
-          ['sign']
-        );
-        
-        const message = JSON.stringify(payload);
-        const messageData = encoder.encode(message);
-        
-        const signature = await window.crypto.subtle.sign('HMAC', key, messageData);
-        const signatureArray = new Uint8Array(signature);
-        const signatureBase64 = btoa(String.fromCharCode(...signatureArray));
-        
-        setHmacSignature(signatureBase64);
-      };
-      
-      generateHmac();
-    }
-  }, [professionalId, formData.clientEmail, formData.subject, formData.message, clientTimestamp]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,8 +45,7 @@ export function ContactForm({
           professionalType,
           ...formData,
           turnstileToken,
-          hmacSignature,
-          clientTimestamp,
+          clientTimestamp: Date.now(),
         }),
       });
       

@@ -86,7 +86,7 @@ export async function sendContactNotification(
   
   return sendEmail({
     to: professionalEmail,
-    subject: `New Inquiry: ${subject}`,
+    subject: `New Inquiry: ${subject.replace(/[\r\n]/g, '').substring(0, 100)}`,
     html,
   });
 }

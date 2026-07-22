@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { apiLimiter } from '@/lib/rate-limit';
+import { appraisalSchema } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           property: true,
-          appraiser: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } },
+          appraiser: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -70,6 +71,16 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json();
     
+    const validation = appraisalSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input provided' },
+        { status: 400 }
+      );
+    }
+    
+    const validatedData = validation.data;
+    
     const appraiserProfile = await prisma.appraiserProfile.findUnique({
       where: { userId: (session.user as any).id },
     });
@@ -80,14 +91,14 @@ export async function POST(request: NextRequest) {
     
     const appraisal = await prisma.appraisal.create({
       data: {
-        propertyId: body.propertyId,
+        propertyId: validatedData.propertyId,
         appraiserId: appraiserProfile.id,
-        scheduledDate: body.scheduledDate ? new Date(body.scheduledDate) : null,
-        notes: body.notes,
+        scheduledDate: validatedData.scheduledDate ? new Date(validatedData.scheduledDate) : null,
+        notes: validatedData.notes,
       },
       include: {
         property: true,
-        appraiser: { include: { user: true } },
+        appraiser: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
       },
     });
     
