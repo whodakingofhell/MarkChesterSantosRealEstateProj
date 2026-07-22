@@ -8,6 +8,8 @@ import { apiLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
+const safeUserSelect = { id: true, email: true, name: true, role: true };
+
 export async function GET(request: NextRequest) {
   const rateLimited = await apiLimiter(request);
   if (rateLimited) return rateLimited;
@@ -17,12 +19,17 @@ export async function GET(request: NextRequest) {
     const searchData = {
       query: searchParams.get('query') || undefined,
       propertyType: searchParams.get('propertyType') || undefined,
+      status: searchParams.get('status') || undefined,
       minPrice: searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined,
       maxPrice: searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined,
-      city: searchParams.get('city') || undefined,
-      province: searchParams.get('province') || undefined,
+      minLotArea: searchParams.get('minLotArea') ? parseFloat(searchParams.get('minLotArea')!) : undefined,
+      maxLotArea: searchParams.get('maxLotArea') ? parseFloat(searchParams.get('maxLotArea')!) : undefined,
+      minFloorArea: searchParams.get('minFloorArea') ? parseFloat(searchParams.get('minFloorArea')!) : undefined,
+      maxFloorArea: searchParams.get('maxFloorArea') ? parseFloat(searchParams.get('maxFloorArea')!) : undefined,
       bedrooms: searchParams.get('bedrooms') ? parseInt(searchParams.get('bedrooms')!) : undefined,
       bathrooms: searchParams.get('bathrooms') ? parseInt(searchParams.get('bathrooms')!) : undefined,
+      city: searchParams.get('city') || undefined,
+      province: searchParams.get('province') || undefined,
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '20'),
     };
@@ -33,31 +40,52 @@ export async function GET(request: NextRequest) {
     }
     
     const filters = validation.data;
-    const where: any = { status: 'ACTIVE' };
+    const where: any = {};
+    
+    if (filters.status) {
+      where.status = filters.status;
+    } else {
+      where.status = 'ACTIVE';
+    }
     
     if (filters.query) {
       where.OR = [
-        { title: { contains: filters.query } },
-        { description: { contains: filters.query } },
-        { address: { contains: filters.query } },
+        { title: { contains: filters.query, mode: 'insensitive' } },
+        { description: { contains: filters.query, mode: 'insensitive' } },
+        { address: { contains: filters.query, mode: 'insensitive' } },
+        { city: { contains: filters.query, mode: 'insensitive' } },
       ];
     }
     
     if (filters.propertyType) where.propertyType = filters.propertyType;
+    
     if (filters.minPrice || filters.maxPrice) {
       where.price = {};
       if (filters.minPrice) where.price.gte = filters.minPrice;
       if (filters.maxPrice) where.price.lte = filters.maxPrice;
     }
-    if (filters.city) where.city = { contains: filters.city };
-    if (filters.province) where.province = { contains: filters.province };
+    
+    if (filters.minLotArea || filters.maxLotArea) {
+      where.lotArea = {};
+      if (filters.minLotArea) where.lotArea.gte = filters.minLotArea;
+      if (filters.maxLotArea) where.lotArea.lte = filters.maxLotArea;
+    }
+    
+    if (filters.minFloorArea || filters.maxFloorArea) {
+      where.floorArea = {};
+      if (filters.minFloorArea) where.floorArea.gte = filters.minFloorArea;
+      if (filters.maxFloorArea) where.floorArea.lte = filters.maxFloorArea;
+    }
+    
+    if (filters.city) where.city = { contains: filters.city, mode: 'insensitive' };
+    if (filters.province) where.province = { contains: filters.province, mode: 'insensitive' };
     if (filters.bedrooms) where.bedrooms = { gte: filters.bedrooms };
     if (filters.bathrooms) where.bathrooms = { gte: filters.bathrooms };
     
     const [properties, total] = await Promise.all([
       prisma.property.findMany({
         where,
-        include: { broker: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } } },
+        include: { broker: { include: { user: { select: safeUserSelect } } } },
         skip: (filters.page - 1) * filters.limit,
         take: filters.limit,
         orderBy: { createdAt: 'desc' },
@@ -126,7 +154,7 @@ export async function POST(request: NextRequest) {
         features: JSON.stringify(body.features || []),
         images: JSON.stringify(body.images || []),
       },
-      include: { broker: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } } },
+      include: { broker: { include: { user: { select: safeUserSelect } } } },
     });
     
     return NextResponse.json({ success: true, data: property });

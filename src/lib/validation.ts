@@ -79,7 +79,12 @@ export const appraiserProfileSchema = z.object({
 export const propertySchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().min(10, 'Description must be at least 10 characters').max(5000),
-  propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'LAND', 'MIXED_USE']),
+  propertyType: z.enum([
+    'LOT_ONLY', 'HOUSE_AND_LOT', 'FARM_LOT', 'COMMERCIAL', 'BEACHFRONT',
+    'CONDOMINIUM', 'TOWNHOUSE', 'MIXED_USE', 'INDUSTRIAL', 'LAND',
+    'RESIDENTIAL', 'CONDO', 'APARTMENT',
+  ]),
+  status: z.enum(['ACTIVE', 'SOLD', 'PENDING', 'INACTIVE']).optional(),
   price: z.number().positive('Price must be positive').max(999999999999),
   lotArea: z.number().positive().optional(),
   floorArea: z.number().positive().optional(),
@@ -141,13 +146,22 @@ export const reviewSchema = z.object({
 // Search schema
 export const searchSchema = z.object({
   query: z.string().max(200).optional(),
-  propertyType: z.enum(['RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'LAND', 'MIXED_USE']).optional(),
+  propertyType: z.enum([
+    'LOT_ONLY', 'HOUSE_AND_LOT', 'FARM_LOT', 'COMMERCIAL', 'BEACHFRONT',
+    'CONDOMINIUM', 'TOWNHOUSE', 'MIXED_USE', 'INDUSTRIAL', 'LAND',
+    'RESIDENTIAL', 'CONDO', 'APARTMENT',
+  ]).optional(),
+  status: z.enum(['ACTIVE', 'SOLD', 'PENDING', 'INACTIVE']).optional(),
   minPrice: z.number().positive().optional(),
   maxPrice: z.number().positive().optional(),
-  city: z.string().max(100).optional(),
-  province: z.string().max(100).optional(),
+  minLotArea: z.number().positive().optional(),
+  maxLotArea: z.number().positive().optional(),
+  minFloorArea: z.number().positive().optional(),
+  maxFloorArea: z.number().positive().optional(),
   bedrooms: z.number().int().min(0).optional(),
   bathrooms: z.number().int().min(0).optional(),
+  city: z.string().max(100).optional(),
+  province: z.string().max(100).optional(),
   page: z.number().int().positive().default(1),
   limit: z.number().int().min(1).max(100).default(20),
 });
