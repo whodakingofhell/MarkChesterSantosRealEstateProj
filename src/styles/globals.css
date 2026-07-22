@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-secondary-50 text-secondary-900;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.dark body {
+  @apply bg-secondary-900 text-secondary-100;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-100 text-secondary-900 px-4 py-2 rounded-lg font-medium hover:bg-secondary-200 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-secondary-700 text-secondary-100 hover:bg-secondary-600;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .dark .input-field {
+    @apply bg-secondary-800 border-secondary-600 text-white placeholder-secondary-400;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-secondary-700 mb-1;
+  }
+
+  .dark .label {
+    @apply text-secondary-300;
+  }
+
+  .error-text {
+    @apply text-red-600 text-sm mt-1;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .dark .card {
+    @apply bg-secondary-800;
+  }
+
+  .card-hover {
+    @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow;
+  }
+
+  .dark .card-hover {
+    @apply bg-secondary-800 hover:bg-secondary-700;
+  }
+}

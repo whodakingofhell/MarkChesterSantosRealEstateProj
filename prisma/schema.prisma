@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          String    @default("CLIENT")
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  brokerProfile    BrokerProfile?
+  appraiserProfile AppraiserProfile?
+  clientProfile    ClientProfile?
+  sessions         Session[]
+  auditLogs        AuditLog[]
+}
+
+// Broker Profile
+model BrokerProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNumber   String    @unique
+  licenseExpiry   DateTime
+  specializations String    @default("[]")
+  yearsExperience Int
+  bio             String?
+  photo           String?
+  socialMedia     String?
+  contactInfo     String?
+  slug            String    @unique
+  isVerified      Boolean   @default(false)
+  averageRating   Float     @default(0)
+  totalReviews    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  properties    Property[]
+  transactions  Transaction[]
+  reviews       Review[]
+}
+
+// Appraiser Profile
+model AppraiserProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNumber   String    @unique
+  licenseExpiry   DateTime
+  specializations String    @default("[]")
+  yearsExperience Int
+  bio             String?
+  photo           String?
+  socialMedia     String?
+  contactInfo     String?
+  slug            String    @unique
+  isVerified      Boolean   @default(false)
+  averageRating   Float     @default(0)
+  totalReviews    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  appraisals Appraisal[]
+  reviews    Review[]
+}
+
+// Client Profile
+model ClientProfile {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone       String?
+  address     String?
+  preferences String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  inquiries    Inquiry[]
+  transactions Transaction[]
+}
+
+// Property
+model Property {
+  id            String    @id @default(cuid())
+  brokerId      String
+  broker        BrokerProfile @relation(fields: [brokerId], references: [id])
+  title         String
+  description   String
+  propertyType  String
+  status        String    @default("ACTIVE")
+  price         Float
+  lotArea       Float?
+  floorArea     Float?
+  bedrooms      Int?
+  bathrooms     Int?
+  carGarage     Int?
+  address       String
+  city          String
+  province      String
+  latitude      Float?
+  longitude     Float?
+  features      String    @default("[]")
+  images        String    @default("[]")
+  documents     String    @default("[]")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  transactions Transaction[]
+  appraisals   Appraisal[]
+}
+
+// Transaction
+model Transaction {
+  id            String    @id @default(cuid())
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+  brokerId      String
+  broker        BrokerProfile @relation(fields: [brokerId], references: [id])
+  clientId      String
+  client        ClientProfile @relation(fields: [clientId], references: [id])
+  type          String
+  status        String    @default("PENDING")
+  amount        Float
+  commission    Float
+  commissionRate Float
+  documents     String    @default("[]")
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Appraisal
+model Appraisal {
+  id            String    @id @default(cuid())
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+  appraiserId   String
+  appraiser     AppraiserProfile @relation(fields: [appraiserId], references: [id])
+  status        String    @default("PENDING")
+  report        String?
+  value         Float?
+  documents     String    @default("[]")
+  notes         String?
+  scheduledDate DateTime?
+  completedDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Review
+model Review {
+  id              String    @id @default(cuid())
+  brokerId        String?
+  broker          BrokerProfile? @relation(fields: [brokerId], references: [id])
+  appraiserId     String?
+  appraiser       AppraiserProfile? @relation(fields: [appraiserId], references: [id])
+  clientName      String
+  clientEmail     String
+  rating          Int
+  comment         String?
+  isVerified      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Inquiry
+model Inquiry {
+  id              String    @id @default(cuid())
+  clientId        String
+  client          ClientProfile @relation(fields: [clientId], references: [id])
+  subject         String
+  message         String
+  propertyType    String?
+  budgetMin       Float?
+  budgetMax       Float?
+  status          String    @default("OPEN")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Contact Submission
+model ContactSubmission {
+  id              String    @id @default(cuid())
+  professionalId  String
+  professionalType String
+  clientName      String
+  clientEmail     String
+  clientPhone     String?
+  subject         String
+  message         String
+  propertyType    String?
+  budgetRange     String?
+  source          String    @default("profile_page")
+  forwardingStatus String?
+  createdAt       DateTime  @default(now())
+}
+
+// Session
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+}
+
+// Audit Log
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  resource  String
+  resourceId String?
+  details   String?
+  ipAddress String
+  userAgent String
+  createdAt DateTime @default(now())
+}
