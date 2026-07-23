@@ -44,13 +44,23 @@
 ### User Experience
 - **Responsive Design** — Mobile-first responsive UI with Tailwind CSS
 - **Dark/Light Mode** — Theme toggle with system preference detection
+- **Multi-Language Support** — English, Filipino, Chinese with language switcher
 - **Public Profile Pages** — SEO-friendly professional profile pages with slug-based URLs
 - **FAQ, Privacy Policy, Terms of Service** — Legal and informational pages
 - **30-Minute Session Timeout** — Inactivity timer with 60-second warning notification
 - **AI Chatbot** — Floating FAQ chatbot widget for instant user support
 - **Background Tab Detection** — Auto-signout when browser tab is hidden for 60 seconds
 
+### Content & SEO
+- **Property Blog** — SEO-optimized blog with JSON-LD structured data
+- **Sample Articles** — Metro Manila market guide, buyer guide, investment guide
+- **Sitemap & Robots** — Auto-generated sitemap.xml and robots.txt
+- **Open Graph & Twitter Cards** — Social media sharing optimization
+
 ### DevOps & Quality
+- **Cloud Image Storage** — Cloudinary integration with auto-optimization (fallback to base64)
+- **Error Monitoring** — Sentry integration for production error tracking
+- **Playwright E2E Tests** — Automated testing for critical user flows
 - **Database Seeding** — Automated seed scripts for production and test accounts
 - **Email Notifications** — SMTP email integration via Nodemailer
 - **Health Check API** — `/api/health` endpoint for uptime monitoring
@@ -220,6 +230,8 @@ NALBAP-App/
 | `GET` | `/api/reviews` | List reviews | No |
 | `POST` | `/api/reviews` | Submit review | Yes |
 | `POST` | `/api/contact` | Submit contact form | No |
+| `GET` | `/blog` | Blog listing | No |
+| `GET` | `/blog/[slug]` | Blog post | No |
 
 ---
 
@@ -314,6 +326,8 @@ node prisma/seed-production.js
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | Run TypeScript type checking |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run test:e2e:ui` | Run Playwright tests with UI |
 | `npm run test` | Run Jest tests |
 | `npm run db:generate` | Generate Prisma client |
 | `npm run db:push` | Push schema to database |
