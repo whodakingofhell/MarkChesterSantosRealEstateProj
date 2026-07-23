@@ -8,28 +8,54 @@ interface EmailOptions {
   text?: string;
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_PORT === '465',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+function getTransporter() {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT || '465';
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !user || !pass) {
+    console.error('[EMAIL] Missing SMTP config:', {
+      host: host ? 'SET' : 'MISSING',
+      user: user ? 'SET' : 'MISSING',
+      pass: pass ? 'SET' : 'MISSING',
+    });
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port: parseInt(port),
+    secure: port === '465',
+    auth: { user, pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+  });
+}
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.error('[EMAIL] SMTP not configured - email not sent:', options.subject);
+    return false;
+  }
+
   try {
+    const from = process.env.SMTP_FROM || process.env.SMTP_USER;
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from,
       to: options.to,
       subject: options.subject,
       html: options.html,
       text: options.text,
     });
+    console.log('[EMAIL] Sent successfully:', options.subject, '->', options.to);
     return true;
-  } catch (error) {
-    console.error('Email send failed:', error);
+  } catch (error: any) {
+    console.error('[EMAIL] Send failed:', options.subject, '->', options.to);
+    console.error('[EMAIL] Error:', error.message || String(error));
+    if (error.code) console.error('[EMAIL] Code:', error.code);
+    if (error.response) console.error('[EMAIL] Response:', error.response);
     return false;
   }
 }
@@ -230,6 +256,59 @@ export async function sendPasswordResetEmail(
   return sendEmail({
     to: email,
     subject: 'Reset Your Password - Philippine Skyland',
+    html,
+  });
+}
+
+export async function sendEmailChangeConfirmation(
+  currentEmail: string,
+  newEmail: string,
+  token: string,
+  appUrl: string
+): Promise<boolean> {
+  const confirmUrl = `${appUrl}/api/auth/confirm-email-change?token=${token}`;
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #0ea5e9; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; }
+        .btn { display: inline-block; background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .note { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 12px; margin: 16px 0; font-size: 14px; color: #475569; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Confirm Email Change</h1>
+        </div>
+        <div class="content">
+          <p>You requested to change your email address on Philippine Skyland.</p>
+          <p><strong>From:</strong> ${currentEmail}</p>
+          <p><strong>To:</strong> ${newEmail}</p>
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${confirmUrl}" class="btn">Confirm Email Change</a>
+          </p>
+          <div class="note">
+            <p><strong>This link expires in 1 hour.</strong> If you did not request this change, please ignore this email.</p>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} Philippine Skyland MGT and DEVT OPC (PPSMDO). All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  return sendEmail({
+    to: currentEmail,
+    subject: 'Confirm Email Change - Philippine Skyland',
     html,
   });
 }
