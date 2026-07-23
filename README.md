@@ -5,7 +5,7 @@
 
 **Enterprise-grade real estate broker and appraisal management platform for Philippine real estate professionals.**
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748?logo=prisma)](https://www.prisma.io/)
@@ -33,12 +33,18 @@
 - **Cloudflare Turnstile CAPTCHA** — Bot protection on registration and contact forms
 - **Audit Logging** — Complete audit trail of user actions with IP and user agent tracking
 - **Session Management** — Server-side session tokens with expiration
+- **Server-Side Review Authentication** — Reviews require signed-in users to prevent fake review injection
+- **Full Zod Validation** — Property creation endpoint now validates all input via Zod schemas
+- **Brute-Force Rate Limiting** — Password change uses stricter authLimiter (10/15min) instead of generic API limiter
 
 ### User Experience
 - **Responsive Design** — Mobile-first responsive UI with Tailwind CSS
 - **Dark/Light Mode** — Theme toggle with system preference detection
 - **Public Profile Pages** — SEO-friendly professional profile pages with slug-based URLs
 - **FAQ, Privacy Policy, Terms of Service** — Legal and informational pages
+- **30-Minute Session Timeout** — Inactivity timer with 60-second warning notification
+- **AI Chatbot** — Floating FAQ chatbot widget for instant user support
+- **Background Tab Detection** — Auto-signout when browser tab is hidden for 60 seconds
 
 ### DevOps & Quality
 - **Database Seeding** — Automated seed scripts for production and test accounts
@@ -197,6 +203,7 @@ NALBAP-App/
 |--------|----------|-------------|---------------|
 | `GET` | `/api/health` | Health check | No |
 | `POST` | `/api/auth/register` | User registration | No |
+| `POST` | `/api/auth/change-password` | Change password | Yes |
 | `GET/POST` | `/api/auth/[...nextauth]` | NextAuth handlers | No |
 | `GET` | `/api/properties` | List properties | No |
 | `POST` | `/api/properties` | Create property | Yes (Broker) |
@@ -220,7 +227,7 @@ This platform implements a **10-layer security defense stack**:
 1. **Input Validation** — Zod schemas validate all incoming data
 2. **Input Sanitization** — XSS prevention on all user-generated content
 3. **CSRF Protection** — Cross-site request forgery tokens on state-changing requests
-4. **Rate Limiting** — Request throttling on API endpoints
+4. **Rate Limiting** — Request throttling on API endpoints with IP validation
 5. **bcrypt Password Hashing** — 12-round salted hashes for all passwords
 6. **JWT Authentication** — Signed tokens with configurable expiration
 7. **Role-Based Access Control** — Granular permission checks per endpoint
@@ -233,6 +240,10 @@ Additional protections:
 - Server-side session management with token expiration
 - Environment variable validation at startup
 - SQL injection prevention via Prisma ORM
+- Property creation input validation via Zod schemas (prevents unvalidated data insertion)
+- Review posting requires authentication (prevents fake review injection)
+- Transaction response data sanitization (strips internal user fields)
+- Health endpoint minimizes information disclosure (returns status only)
 
 ---
 
