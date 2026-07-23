@@ -19,48 +19,7 @@ interface Inquiry {
   createdAt: string;
 }
 
-const MOCK_INQUIRIES: Inquiry[] = [
-  {
-    id: '1',
-    clientName: 'Juan Dela Cruz',
-    clientEmail: 'juan.delacruz@email.com',
-    clientPhone: '+63 917 111 2222',
-    subject: 'Looking for a 2-bedroom condo in BGC',
-    message:
-      'Hi, I am interested in purchasing a 2-bedroom condo unit in BGC. My budget is around PHP 12M-18M. I would prefer a unit with a good view and near the station. Please let me know what you have available.',
-    propertyType: 'RESIDENTIAL',
-    budgetRange: '₱12M - ₱18M',
-    source: 'profile_page',
-    status: 'OPEN',
-    createdAt: '2025-07-10T08:30:00.000Z',
-  },
-  {
-    id: '2',
-    clientName: 'Maria Santos',
-    clientEmail: 'maria.santos@company.com',
-    subject: 'Commercial space inquiry for restaurant',
-    message:
-      'We are looking for a commercial space to open a restaurant. Preferred location is Makati or BGC. Floor area should be at least 150 sqm. Kindly send available listings.',
-    propertyType: 'COMMERCIAL',
-    budgetRange: '₱50K - ₱100K/month',
-    source: 'profile_page',
-    status: 'RESPONDED',
-    createdAt: '2025-07-05T14:15:00.000Z',
-  },
-  {
-    id: '3',
-    clientName: 'Roberto Reyes',
-    clientEmail: 'roberto.reyes@email.com',
-    subject: 'Land for sale in Cavite',
-    message:
-      'I am interested in purchasing land in Cavite for a residential development project. Looking for at least 500 sqm. Please share any available lots.',
-    propertyType: 'LAND',
-    budgetRange: '₱3M - ₱7M',
-    source: 'profile_page',
-    status: 'CLOSED',
-    createdAt: '2025-06-20T09:00:00.000Z',
-  },
-];
+const MOCK_INQUIRIES: Inquiry[] = [];
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-PH', {

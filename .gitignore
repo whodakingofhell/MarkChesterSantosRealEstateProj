@@ -5,6 +5,8 @@ node_modules/
 
 # testing
 coverage/
+playwright-report/
+test-results/
 
 # next.js
 .next/
@@ -22,10 +24,12 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+server.log
 
 # local env files
 .env
 .env.local
+.env.development
 .env.development.local
 .env.test.local
 .env.production.local
@@ -38,12 +42,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# debug
-server.log
-
 # databases
-prisma/dev.db
-prisma/dev.db-journal
-
-# build artifacts
-.vercel
+*.db
+*.db-journal

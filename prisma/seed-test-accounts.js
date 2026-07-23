@@ -3,10 +3,13 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
+const testPassword = process.env.SEED_TEST_PASSWORD || 'Test@2026!';
+const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@2026!';
+
 const accounts = [
   {
     email: 'maria@test.com',
-    password: 'Test@2026!',
+    password: testPassword,
     name: 'Maria Santos',
     role: 'CLIENT',
     profile: {
@@ -16,7 +19,7 @@ const accounts = [
   },
   {
     email: 'juan@test.com',
-    password: 'Test@2026!',
+    password: testPassword,
     name: 'Juan Dela Cruz',
     role: 'CLIENT',
     profile: {
@@ -26,7 +29,7 @@ const accounts = [
   },
   {
     email: 'roberto@test.com',
-    password: 'Test@2026!',
+    password: testPassword,
     name: 'Roberto Reyes',
     role: 'APPRAISER',
     profile: {
@@ -41,7 +44,7 @@ const accounts = [
   },
   {
     email: 'admin@philippineskyland.com',
-    password: 'Admin@2026!',
+    password: adminPassword,
     name: 'Admin User',
     role: 'ADMIN',
     profile: null,

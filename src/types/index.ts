@@ -11,7 +11,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export type UserRole = 'ADMIN' | 'BROKER' | 'APPRAISER' | 'CLIENT' | 'RECEPTIONIST' | 'INSPECTOR' | 'ACCOUNTING' | 'COMPLIANCE';
+export type UserRole = 'ADMIN' | 'BROKER' | 'APPRAISER' | 'CLIENT';
 
 export interface BrokerProfile {
   id: string;
@@ -106,7 +106,7 @@ export interface Property {
   updatedAt: Date;
 }
 
-export type PropertyType = 'RESIDENTIAL' | 'COMMERCIAL' | 'INDUSTRIAL' | 'LAND' | 'MIXED_USE';
+export type PropertyType = 'LOT_ONLY' | 'HOUSE_AND_LOT' | 'FARM_LOT' | 'COMMERCIAL' | 'BEACHFRONT' | 'CONDOMINIUM' | 'TOWNHOUSE' | 'MIXED_USE' | 'INDUSTRIAL' | 'LAND' | 'RESIDENTIAL' | 'CONDO' | 'APARTMENT';
 export type PropertyStatus = 'ACTIVE' | 'SOLD' | 'PENDING' | 'WITHDRAWN';
 
 export interface Transaction {
