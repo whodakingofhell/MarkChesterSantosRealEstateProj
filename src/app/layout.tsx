@@ -5,6 +5,7 @@ import { Providers } from '@/components/Providers';
 import { Navbar } from '@/components/Navbar';
 import { SessionTimeout } from '@/components/SessionTimeout';
 import { Chatbot } from '@/components/Chatbot';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -98,6 +99,7 @@ export default function RootLayout({
           {children}
           <Chatbot />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
