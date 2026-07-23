@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ThemeToggle } from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useState, useEffect } from 'react';
 
 export function Navbar() {
@@ -22,6 +23,7 @@ export function Navbar() {
   const links = [
     { href: '/', label: 'Home' },
     { href: '/properties', label: 'Properties' },
+    { href: '/blog', label: 'Blog' },
     { href: '/faq', label: 'FAQ' },
     { href: '/privacy', label: 'Privacy' },
     { href: '/terms', label: 'Terms' },
@@ -135,6 +137,7 @@ export function Navbar() {
               <div className="w-8 h-8 rounded-full bg-secondary-200 dark:bg-secondary-700 animate-pulse" />
             )}
 
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>

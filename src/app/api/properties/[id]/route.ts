@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { apiLimiter } from '@/lib/rate-limit';
+import { uploadImage, deleteImage, isCloudinaryConfigured } from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,15 +52,35 @@ export async function POST(
       return NextResponse.json({ error: 'Maximum 20 images allowed' }, { status: 400 });
     }
 
+    const currentImages = JSON.parse(property.images || '[]');
+    const newImageUrls: string[] = [];
+
     for (const img of images) {
       if (typeof img !== 'string') {
         return NextResponse.json({ error: 'Invalid image data' }, { status: 400 });
       }
+
+      if (isCloudinaryConfigured() && img.startsWith('data:image')) {
+        const result = await uploadImage(img, `properties/${id}`);
+        if (result) {
+          newImageUrls.push(result.url);
+        } else {
+          newImageUrls.push(img);
+        }
+      } else {
+        newImageUrls.push(img);
+      }
+    }
+
+    const allImages = [...currentImages, ...newImageUrls];
+
+    if (allImages.length > 20) {
+      return NextResponse.json({ error: 'Maximum 20 images allowed total' }, { status: 400 });
     }
 
     const updated = await prisma.property.update({
       where: { id },
-      data: { images: JSON.stringify(images) },
+      data: { images: JSON.stringify(allImages) },
       include: { broker: { include: { user: { select: { id: true, name: true, email: true, role: true } } } } },
     });
 
@@ -114,6 +135,18 @@ export async function DELETE(
     const currentImages = JSON.parse(property.images || '[]');
     if (index >= currentImages.length) {
       return NextResponse.json({ error: 'Image index out of range' }, { status: 400 });
+    }
+
+    const removedImage = currentImages[index];
+
+    if (isCloudinaryConfigured() && removedImage.includes('cloudinary.com')) {
+      const urlParts = removedImage.split('/');
+      const uploadIndex = urlParts.indexOf('upload');
+      if (uploadIndex !== -1) {
+        const publicIdParts = urlParts.slice(uploadIndex + 2);
+        const publicId = publicIdParts.join('/').replace(/\.[^.]+$/, '');
+        await deleteImage(publicId);
+      }
     }
 
     currentImages.splice(index, 1);

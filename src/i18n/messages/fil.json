@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "home": "Home",
+    "properties": "Mga Ari-arian",
+    "faq": "Mga Tanong",
+    "privacy": "Pribasiya",
+    "terms": "Mga Tuntunin",
+    "login": "Mag-login",
+    "register": "Magrehistro",
+    "dashboard": "Dashboard",
+    "logout": "Mag-logout",
+    "blog": "Blog"
+  },
+  "hero": {
+    "title": "Philippine Skyland",
+    "subtitle": "Enterprise-Grade Real Estate Platform para sa mga Propesyonal ng Pilipinas",
+    "cta": "Tingnan ang mga Ari-arian",
+    "ctaSecondary": "Magrehistro bilang Broker"
+  },
+  "properties": {
+    "title": "Mga Ari-arian",
+    "search": "Maghanap ng ari-arian...",
+    "filters": "Mga Filter",
+    "type": "Uri ng Ari-arian",
+    "budget": "Range ng Budget",
+    "lotSize": "Laki ng Lote",
+    "bedrooms": "Silid-tulugan",
+    "bathrooms": "Banyo",
+    "city": "Lungsod",
+    "province": "Probinsya",
+    "allTypes": "Lahat ng Uri",
+    "allBudgets": "Lahat ng Budget",
+    "results": "{count} ari-arian ang nahanap",
+    "noResults": "Walang nahanap na ari-arian",
+    "viewDetails": "Tingnan ang Detalye"
+  },
+  "auth": {
+    "loginTitle": "Mag-login",
+    "registerTitle": "Gumawa ng Account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Kumpirmahin ang Password",
+    "fullName": "Buong Pangalan",
+    "forgotPassword": "Nakalimutan ang password?",
+    "noAccount": "Wala pang account?",
+    "hasAccount": "May account na?",
+    "registerLink": "Magrehistro dito",
+    "signInLink": "Mag-login",
+    "signingIn": "Naglo-login...",
+    "creatingAccount": "Gumagawa ng account...",
+    "iAmA": "Ako ay isang...",
+    "client": "Kliyente (Naghahanap ng ari-arian)",
+    "broker": "Licensed Broker",
+    "appraiser": "Licensed Appraiser",
+    "passwordRequirements": "Dapat may 8 character pataas na may malaki, maliit, numero, at espesyal na karakter"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "properties": "Mga Ari-arian Ko",
+    "transactions": "Mga Transaksyon",
+    "inquiries": "Mga Tanong",
+    "profile": "Profile",
+    "settings": "Mga Setting",
+    "revenue": "Kita",
+    "totalProperties": "Kabuuang Ari-arian",
+    "activeListings": "Aktibong Listing",
+    "totalInquiries": "Kabuuang Tanong"
+  },
+  "profile": {
+    "about": "Tungkol sa",
+    "experience": "Karanasan",
+    "license": "Status ng Lisensya",
+    "active": "Aktibo",
+    "contact": "Makipag-ugnayan",
+    "sendMessage": "Magpadala ng Mensahe",
+    "yourName": "Pangalan Mo",
+    "yourEmail": "Email Address",
+    "phone": "Numero ng Telepono",
+    "subject": "Subjek",
+    "message": "Mensahe",
+    "send": "Ipadala ang Mensahe"
+  },
+  "contact": {
+    "call": "Tawagan",
+    "whatsapp": "WhatsApp",
+    "viber": "Viber",
+    "email": "Email",
+    "copyContact": "Kopyahin ang Contact",
+    "shareProfile": "Ibahagi ang Profile"
+  },
+  "footer": {
+    "description": "Licensed Real Estate Broker at Appraiser platform para sa mga propesyonal ng real estate sa Pilipinas.",
+    "quickLinks": "Mabilis na Links",
+    "contactUs": "Makipag-ugnayan sa Amin",
+    "globe": "Globe",
+    "smart": "Smart",
+    "copyright": "Lahat ng karapatan ay nakalaan."
+  },
+  "common": {
+    "loading": "Naglo-load...",
+    "error": "May nangyaring mali",
+    "retry": "Subukan muli",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "delete": "Tanggalin",
+    "edit": "I-edit",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "previous": "Nakaraan",
+    "yes": "Oo",
+    "no": "Hindi"
+  }
+}

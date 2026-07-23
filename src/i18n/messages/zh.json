@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "home": "首页",
+    "properties": "房产",
+    "faq": "常见问题",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "login": "登录",
+    "register": "注册",
+    "dashboard": "控制面板",
+    "logout": "退出",
+    "blog": "博客"
+  },
+  "hero": {
+    "title": "菲律宾天域",
+    "subtitle": "为菲律宾房地产专业人士打造的企业级房地产平台",
+    "cta": "浏览房产",
+    "ctaSecondary": "注册为经纪人"
+  },
+  "properties": {
+    "title": "房产",
+    "search": "搜索房产...",
+    "filters": "筛选",
+    "type": "房产类型",
+    "budget": "预算范围",
+    "lotSize": "地块面积",
+    "bedrooms": "卧室",
+    "bathrooms": "浴室",
+    "city": "城市",
+    "province": "省份",
+    "allTypes": "所有类型",
+    "allBudgets": "所有预算",
+    "results": "找到 {count} 个房产",
+    "noResults": "未找到房产",
+    "viewDetails": "查看详情"
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "registerTitle": "创建账户",
+    "email": "电子邮件地址",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "fullName": "全名",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "还没有账户？",
+    "hasAccount": "已有账户？",
+    "registerLink": "立即注册",
+    "signInLink": "立即登录",
+    "signingIn": "登录中...",
+    "creatingAccount": "创建账户中...",
+    "iAmA": "我是...",
+    "client": "客户（寻找房产）",
+    "broker": "持牌经纪人",
+    "appraiser": "持牌估价师",
+    "passwordRequirements": "至少8个字符，包含大小写字母、数字和特殊字符"
+  },
+  "dashboard": {
+    "title": "控制面板",
+    "properties": "我的房产",
+    "transactions": "交易",
+    "inquiries": "咨询",
+    "profile": "个人资料",
+    "settings": "设置",
+    "revenue": "收入",
+    "totalProperties": "房产总数",
+    "activeListings": "活跃列表",
+    "totalInquiries": "咨询总数"
+  },
+  "profile": {
+    "about": "关于",
+    "experience": "经验",
+    "license": "执照状态",
+    "active": "有效",
+    "contact": "联系方式",
+    "sendMessage": "发送消息",
+    "yourName": "您的姓名",
+    "yourEmail": "电子邮件",
+    "phone": "电话号码",
+    "subject": "主题",
+    "message": "消息",
+    "send": "发送消息"
+  },
+  "contact": {
+    "call": "电话",
+    "whatsapp": "WhatsApp",
+    "viber": "Viber",
+    "email": "邮件",
+    "copyContact": "复制联系方式",
+    "shareProfile": "分享资料"
+  },
+  "footer": {
+    "description": "为菲律宾房地产专业人士打造的持牌房地产经纪人和估价师平台。",
+    "quickLinks": "快速链接",
+    "contactUs": "联系我们",
+    "globe": "Globe",
+    "smart": "Smart",
+    "copyright": "版权所有。"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "出了点问题",
+    "retry": "重试",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "back": "返回",
+    "next": "下一个",
+    "previous": "上一个",
+    "yes": "是",
+    "no": "否"
+  }
+}

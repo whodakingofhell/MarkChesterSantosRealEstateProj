@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "home": "Home",
+    "properties": "Properties",
+    "faq": "FAQ",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "login": "Sign In",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "logout": "Sign Out",
+    "blog": "Blog"
+  },
+  "hero": {
+    "title": "Philippine Skyland",
+    "subtitle": "Enterprise-Grade Real Estate Platform for Philippine Professionals",
+    "cta": "Browse Properties",
+    "ctaSecondary": "Register as Broker"
+  },
+  "properties": {
+    "title": "Properties",
+    "search": "Search properties...",
+    "filters": "Filters",
+    "type": "Property Type",
+    "budget": "Budget Range",
+    "lotSize": "Lot Size",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "city": "City",
+    "province": "Province",
+    "allTypes": "All Types",
+    "allBudgets": "All Budgets",
+    "results": "{count} properties found",
+    "noResults": "No properties found",
+    "viewDetails": "View Details"
+  },
+  "auth": {
+    "loginTitle": "Sign In",
+    "registerTitle": "Create Account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "registerLink": "Register here",
+    "signInLink": "Sign in",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
+    "iAmA": "I am a...",
+    "client": "Client (Looking for property)",
+    "broker": "Licensed Broker",
+    "appraiser": "Licensed Appraiser",
+    "passwordRequirements": "Must be at least 8 characters with uppercase, lowercase, number, and special character"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "properties": "My Properties",
+    "transactions": "Transactions",
+    "inquiries": "Inquiries",
+    "profile": "Profile",
+    "settings": "Settings",
+    "revenue": "Revenue",
+    "totalProperties": "Total Properties",
+    "activeListings": "Active Listings",
+    "totalInquiries": "Total Inquiries"
+  },
+  "profile": {
+    "about": "About",
+    "experience": "Experience",
+    "license": "License Status",
+    "active": "Active",
+    "contact": "Contact",
+    "sendMessage": "Send a Message",
+    "yourName": "Your Name",
+    "yourEmail": "Email Address",
+    "phone": "Phone Number",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message"
+  },
+  "contact": {
+    "call": "Call",
+    "whatsapp": "WhatsApp",
+    "viber": "Viber",
+    "email": "Email",
+    "copyContact": "Copy Contact",
+    "shareProfile": "Share Profile"
+  },
+  "footer": {
+    "description": "Licensed Real Estate Broker and Appraiser platform for Philippine real estate professionals.",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us",
+    "globe": "Globe",
+    "smart": "Smart",
+    "copyright": "All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No"
+  }
+}
