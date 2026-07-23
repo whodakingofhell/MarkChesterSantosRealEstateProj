@@ -16,6 +16,10 @@ model User {
   role          String    @default("CLIENT")
   isVerified    Boolean   @default(false)
   isActive      Boolean   @default(true)
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String?
+  failedLoginAttempts Int   @default(0)
+  lockedUntil   DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
@@ -25,6 +29,18 @@ model User {
   clientProfile    ClientProfile?
   sessions         Session[]
   auditLogs        AuditLog[]
+  passwordResets   PasswordResetToken[]
+}
+
+// Password Reset Token
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 }
 
 // Broker Profile
@@ -224,13 +240,13 @@ model Session {
 // Audit Log
 model AuditLog {
   id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
   action    String
   resource  String
   resourceId String?
   details   String?
-  ipAddress String
-  userAgent String
+  ipAddress String?
+  userAgent String?
   createdAt DateTime @default(now())
 }

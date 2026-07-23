@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import { prisma } from './prisma';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -70,6 +71,7 @@ export function logError(message: string, context?: Record<string, unknown>): vo
 export function logSecurityEvent(event: string, details: Record<string, unknown>): void {
   const hashedIp = details.ip ? createHash('sha256').update(String(details.ip)).digest('hex').substring(0, 16) : undefined;
   logError(`SECURITY: ${event}`, { ...details, ip: hashedIp });
+  writeAuditToDb(details.userId as string | undefined, 'SECURITY', event, undefined, { ...details, ip: hashedIp });
 }
 
 export async function logAuditAction(
@@ -80,4 +82,32 @@ export async function logAuditAction(
   details?: Record<string, unknown>
 ): Promise<void> {
   logInfo('AUDIT', { userId, action, resource, resourceId, details });
+  await writeAuditToDb(userId, action, resource, resourceId, details);
+}
+
+async function writeAuditToDb(
+  userId: string | undefined,
+  action: string,
+  resource: string,
+  resourceId?: string,
+  details?: Record<string, unknown>
+): Promise<void> {
+  try {
+    const sanitizedDetails = details ? sanitizeLogData(details) : undefined;
+    const ipAddress = details?.ip ? String(details.ip) : undefined;
+    const userAgent = details?.userAgent ? String(details.userAgent) : undefined;
+    await prisma.auditLog.create({
+      data: {
+        userId: userId || undefined,
+        action,
+        resource,
+        resourceId: resourceId || undefined,
+        details: sanitizedDetails ? JSON.stringify(sanitizedDetails) : undefined,
+        ipAddress: ipAddress || undefined,
+        userAgent: userAgent || undefined,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to write audit log to DB:', error);
+  }
 }

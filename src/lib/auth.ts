@@ -5,6 +5,9 @@ import { prisma } from './prisma';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -25,11 +28,45 @@ export const authOptions: NextAuthOptions = {
         if (!user || !user.isActive) {
           return null;
         }
+
+        if (!user.isEmailVerified) {
+          throw new Error('email-not-verified');
+        }
+
+        if (user.lockedUntil && user.lockedUntil > new Date()) {
+          throw new Error('account-locked');
+        }
+
+        if (user.lockedUntil && user.lockedUntil <= new Date()) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { failedLoginAttempts: 0, lockedUntil: null },
+          });
+        }
         
         const isValid = await compare(credentials.password, user.passwordHash);
         
         if (!isValid) {
+          const newAttempts = user.failedLoginAttempts + 1;
+          const updateData: any = { failedLoginAttempts: newAttempts };
+          
+          if (newAttempts >= MAX_FAILED_ATTEMPTS) {
+            updateData.lockedUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
+          }
+          
+          await prisma.user.update({
+            where: { id: user.id },
+            data: updateData,
+          });
+          
           return null;
+        }
+
+        if (user.failedLoginAttempts > 0) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { failedLoginAttempts: 0, lockedUntil: null },
+          });
         }
         
         return {

@@ -1,16 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    const verified = searchParams.get('verified');
+    const reset = searchParams.get('reset');
+    const locked = searchParams.get('locked');
+
+    if (errorParam === 'email-not-verified') {
+      setError('Please verify your email before signing in. Check your inbox for the verification link.');
+    } else if (errorParam === 'account-locked') {
+      setError('Your account has been temporarily locked due to too many failed login attempts. Please try again in 15 minutes.');
+    } else if (verified === 'success') {
+      setSuccess('Email verified successfully! You can now sign in.');
+    } else if (reset === 'success') {
+      setSuccess('Password has been reset successfully! You can now sign in with your new password.');
+    } else if (locked === 'true') {
+      setError('Your account is temporarily locked. Please try again in 15 minutes.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +47,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password. Please try again.');
+        const errorMsg = result.error;
+        if (errorMsg.includes('locked')) {
+          setError('Your account has been temporarily locked due to too many failed login attempts. Please try again in 15 minutes.');
+        } else {
+          setError('Invalid email or password. Please try again.');
+        }
         setIsLoading(false);
       } else if (result?.url) {
         window.location.href = result.url;
@@ -58,6 +84,12 @@ export default function LoginPage() {
         {error && (
           <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg text-sm">
+            {success}
           </div>
         )}
 
@@ -96,6 +128,12 @@ export default function LoginPage() {
                 placeholder="Enter your password"
               />
             </div>
+
+            <div className="flex items-center justify-end">
+              <Link href="/auth/forgot-password" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                Forgot your password?
+              </Link>
+            </div>
           </div>
 
           <div>
@@ -119,5 +157,17 @@ export default function LoginPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900">
+        <div className="text-secondary-500">Loading...</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

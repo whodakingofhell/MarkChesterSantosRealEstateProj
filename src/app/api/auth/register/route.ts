@@ -3,7 +3,7 @@ import { hash } from 'bcryptjs';
 import { registerSchema } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
 import { logInfo, logError } from '@/lib/logger';
-import { sendWelcomeEmail } from '@/lib/email';
+import { sendWelcomeEmail, sendVerificationEmail } from '@/lib/email';
 import { registerLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
     }
     
     const passwordHash = await hash(data.password, 12);
+    const verificationToken = crypto.randomUUID();
     
     const user = await prisma.user.create({
       data: {
@@ -45,16 +46,19 @@ export async function POST(request: NextRequest) {
         passwordHash,
         name: data.name,
         role: data.role,
+        emailVerificationToken: verificationToken,
       },
     });
-    
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://philippine-skyland.vercel.app';
+    await sendVerificationEmail(user.email, user.name, verificationToken, appUrl);
     await sendWelcomeEmail(user.email, user.name, user.role);
     
     logInfo('User registered successfully', { userId: user.id, role: user.role });
     
     return NextResponse.json({
       success: true,
-      message: 'Registration successful.',
+      message: 'Registration successful. Please check your email to verify your account.',
     });
     
   } catch (error) {
