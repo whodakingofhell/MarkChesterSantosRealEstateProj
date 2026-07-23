@@ -20,6 +20,8 @@ model User {
   emailVerificationToken String?
   failedLoginAttempts Int   @default(0)
   lockedUntil   DateTime?
+  emailChangeToken String?
+  pendingEmail  String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   

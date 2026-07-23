@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const Turnstile = dynamic(() => import('@/components/Turnstile'), { ssr: false });
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,6 +18,7 @@ export default function RegisterPage() {
     name: '',
     role: 'CLIENT' as 'BROKER' | 'APPRAISER' | 'CLIENT',
   });
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -21,9 +27,14 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError('');
     
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Please complete the CAPTCHA verification');
       setIsLoading(false);
       return;
     }
@@ -39,6 +50,7 @@ export default function RegisterPage() {
           password: formData.password,
           name: formData.name,
           role: formData.role,
+          turnstileToken: turnstileToken || undefined,
         }),
       });
       
@@ -169,6 +181,16 @@ export default function RegisterPage() {
               />
             </div>
           </div>
+
+          {TURNSTILE_SITE_KEY && (
+            <div className="flex justify-center">
+              <Turnstile
+                siteKey={TURNSTILE_SITE_KEY}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+              />
+            </div>
+          )}
           
           <div>
             <button

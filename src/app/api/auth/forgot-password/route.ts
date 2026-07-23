@@ -6,13 +6,37 @@ import { contactLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY || '';
+
+async function verifyTurnstile(token: string): Promise<boolean> {
+  if (!TURNSTILE_SECRET) return true;
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${encodeURIComponent(TURNSTILE_SECRET)}&response=${encodeURIComponent(token)}`,
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const rateLimited = await contactLimiter(request);
   if (rateLimited) return rateLimited;
 
   try {
     const body = await request.json();
-    const { email } = body;
+    const { email, turnstileToken } = body;
+
+    if (TURNSTILE_SECRET && turnstileToken) {
+      const turnstileValid = await verifyTurnstile(turnstileToken);
+      if (!turnstileValid) {
+        return NextResponse.json({ error: 'CAPTCHA verification failed. Please try again.' }, { status: 400 });
+      }
+    }
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json(

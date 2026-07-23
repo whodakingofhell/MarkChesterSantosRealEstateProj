@@ -2,9 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const Turnstile = dynamic(() => import('@/components/Turnstile'), { ssr: false });
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -15,11 +21,17 @@ export default function ForgotPasswordPage() {
     setError('');
     setSuccess('');
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Please complete the CAPTCHA verification');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), turnstileToken: turnstileToken || undefined }),
       });
 
       const data = await res.json();
@@ -80,6 +92,16 @@ export default function ForgotPasswordPage() {
               placeholder="you@example.com"
             />
           </div>
+
+          {TURNSTILE_SITE_KEY && (
+            <div className="flex justify-center">
+              <Turnstile
+                siteKey={TURNSTILE_SITE_KEY}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+              />
+            </div>
+          )}
 
           <div>
             <button

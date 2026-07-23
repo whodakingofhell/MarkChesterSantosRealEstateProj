@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description: 'Enterprise-grade real estate platform for licensed Philippine brokers and appraisers. Manage properties, track transactions, and grow your client base.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'Philippine Skyland MGT and DEVT OPC',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Philippine Skyland - Licensed Real Estate Broker and Appraiser',
     description: 'Enterprise-grade real estate platform for licensed Philippine brokers and appraisers.',
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   robots: {
     index: true,
@@ -60,8 +60,13 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'google745da16c350fda3d',
   },
 };
 

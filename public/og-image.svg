@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0369a1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Building silhouette -->
+  <g fill="#ffffff" opacity="0.15">
+    <rect x="100" y="380" width="80" height="250"/>
+    <rect x="200" y="320" width="100" height="310"/>
+    <rect x="320" y="280" width="70" height="350"/>
+    <rect x="410" y="350" width="90" height="280"/>
+    <rect x="520" y="250" width="110" height="380"/>
+    <rect x="650" y="300" width="80" height="330"/>
+    <rect x="750" y="220" width="120" height="410"/>
+    <rect x="890" y="340" width="70" height="290"/>
+    <rect x="980" y="280" width="100" height="350"/>
+  </g>
+  
+  <!-- Window dots on buildings -->
+  <g fill="#ffffff" opacity="0.3">
+    <rect x="120" y="400" width="15" height="15" rx="2"/>
+    <rect x="150" y="400" width="15" height="15" rx="2"/>
+    <rect x="120" y="430" width="15" height="15" rx="2"/>
+    <rect x="150" y="430" width="15" height="15" rx="2"/>
+    <rect x="120" y="460" width="15" height="15" rx="2"/>
+    <rect x="220" y="340" width="15" height="15" rx="2"/>
+    <rect x="250" y="340" width="15" height="15" rx="2"/>
+    <rect x="220" y="370" width="15" height="15" rx="2"/>
+    <rect x="250" y="370" width="15" height="15" rx="2"/>
+    <rect x="220" y="400" width="15" height="15" rx="2"/>
+    <rect x="250" y="400" width="15" height="15" rx="2"/>
+    <rect x="770" y="240" width="15" height="15" rx="2"/>
+    <rect x="800" y="240" width="15" height="15" rx="2"/>
+    <rect x="830" y="240" width="15" height="15" rx="2"/>
+    <rect x="770" y="270" width="15" height="15" rx="2"/>
+    <rect x="800" y="270" width="15" height="15" rx="2"/>
+    <rect x="830" y="270" width="15" height="15" rx="2"/>
+  </g>
+  
+  <!-- Text content -->
+  <text x="600" y="180" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="bold" fill="white">
+    Philippine Skyland
+  </text>
+  <text x="600" y="230" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#bae6fd">
+    MGT and DEVT OPC (PPSMDO)
+  </text>
+  <text x="600" y="270" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#e0f2fe">
+    Licensed Real Estate Broker and Appraiser
+  </text>
+  
+  <!-- Divider -->
+  <line x1="350" y1="530" x2="850" y2="530" stroke="#38bdf8" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Contact info -->
+  <text x="600" y="565" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#bae6fd">
+    Globe: +63 917 472 2107 | Smart: +63 960 477 4147 | nelsonaczon@gmail.com
+  </text>
+  <text x="600" y="600" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#7dd3fc">
+    philippine-skyland.vercel.app
+  </text>
+</svg>

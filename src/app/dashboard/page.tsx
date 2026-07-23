@@ -19,17 +19,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      fetch('/api/properties')
+      fetch('/api/dashboard/stats')
         .then((r) => r.json())
-        .then((data) => {
-          const props = data.properties || data || [];
-          const totalRevenue = props.reduce((sum: number, p: any) => sum + (p.price || 0), 0);
-          setStats({
-            properties: props.length,
-            revenue: totalRevenue,
-            inquiries: 0,
-            rating: 0,
-          });
+        .then((result) => {
+          if (result.success && result.data) {
+            setStats(result.data);
+          }
         })
         .catch(() => {});
     }

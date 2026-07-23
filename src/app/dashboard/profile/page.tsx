@@ -59,34 +59,47 @@ export default function DashboardProfilePage() {
     if (status !== 'authenticated') return;
     setLoading(true);
 
-    const savedData = localStorage.getItem('broker-profile');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData) as BrokerProfile;
-        setProfile(parsed);
-        if (parsed.profilePhoto) setPhotoPreview(parsed.profilePhoto);
-        setLoading(false);
-        return;
-      } catch {
-        // fall through
-      }
-    }
-
-    let brokerName = session?.user?.name ?? 'Nelson Aczon';
-    let brokerEmail = session?.user?.email ?? '';
-
     try {
-      const response = await fetch('/api/properties?limit=50');
+      const response = await fetch('/api/profile');
       if (response.ok) {
         const result = await response.json();
-        if (result.success && result.data?.broker) {
-          brokerName = result.data.broker.name ?? brokerName;
-          brokerEmail = result.data.broker.email ?? brokerEmail;
+        if (result.success && result.data) {
+          const user = result.data;
+          const profileData = user.role === 'BROKER' ? user.brokerProfile : user.appraiserProfile;
+
+          let parsedSpecs: string[] = [];
+          if (profileData?.specializations) {
+            try { parsedSpecs = JSON.parse(profileData.specializations); } catch { parsedSpecs = []; }
+          }
+
+          let parsedContact: { phone?: string; address?: string } = {};
+          if (profileData?.contactInfo) {
+            try { parsedContact = JSON.parse(profileData.contactInfo); } catch { parsedContact = {}; }
+          }
+
+          const loadedProfile: BrokerProfile = {
+            name: user.name || '',
+            email: user.email || '',
+            bio: profileData?.bio || '',
+            phone: parsedContact.phone || '',
+            address: parsedContact.address || '',
+            specializations: parsedSpecs,
+            profilePhoto: profileData?.photo || '',
+            documents: [],
+          };
+
+          setProfile(loadedProfile);
+          if (loadedProfile.profilePhoto) setPhotoPreview(loadedProfile.profilePhoto);
+          setLoading(false);
+          return;
         }
       }
     } catch {
-      // use session data as fallback
+      // fall through to session fallback
     }
+
+    let brokerName = session?.user?.name ?? 'User';
+    let brokerEmail = session?.user?.email ?? '';
 
     const initialProfile: BrokerProfile = {
       name: brokerName,
@@ -290,10 +303,30 @@ export default function DashboardProfilePage() {
 
   async function handleSave() {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 600));
-    localStorage.setItem('broker-profile', JSON.stringify(profile));
-    setSaving(false);
-    setSaved(true);
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profile.name,
+          bio: profile.bio,
+          specializations: profile.specializations,
+          contactInfo: { phone: profile.phone, address: profile.address },
+          photo: profile.profilePhoto,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to save profile');
+      }
+
+      setSaved(true);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save profile');
+    } finally {
+      setSaving(false);
+    }
   }
 
   function getInitials(name: string) {
