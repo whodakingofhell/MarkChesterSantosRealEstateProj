@@ -8,8 +8,12 @@ interface RateLimitEntry {
 const store = new Map<string, RateLimitEntry>();
 
 function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim();
+    if (first && first !== 'unknown') return first;
+  }
   return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-real-ip') ||
     'unknown'
   );
@@ -61,32 +65,30 @@ export function rateLimit(config: RateLimitConfig) {
   };
 }
 
-// Pre-configured rate limiters for different route types
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: 10, // 10 attempts per 15 min
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 10,
   message: 'Too many authentication attempts. Please try again in 15 minutes.',
 });
 
 export const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 60, // 60 requests per minute
+  windowMs: 60 * 1000,
+  maxRequests: 60,
   message: 'Too many API requests. Please slow down.',
 });
 
 export const contactLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  maxRequests: 5, // 5 contact submissions per hour
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 5,
   message: 'Too many contact submissions. Please wait before trying again.',
 });
 
 export const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  maxRequests: 3, // 3 registrations per hour per IP
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 3,
   message: 'Too many registration attempts. Please try again later.',
 });
 
-// Cleanup stale entries every 10 minutes
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();

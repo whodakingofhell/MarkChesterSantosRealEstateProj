@@ -5,15 +5,18 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
-  // Request ID for debugging/tracing
   response.headers.set('X-Request-Id', crypto.randomUUID());
 
-  // API-specific checks
   if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
     const userAgent = request.headers.get('user-agent');
     if (!userAgent || userAgent.length < 5) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
+  }
+
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/health') && !pathname.startsWith('/api/auth/')) {
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('Cache-Control', 'no-store');
   }
 
   return response;

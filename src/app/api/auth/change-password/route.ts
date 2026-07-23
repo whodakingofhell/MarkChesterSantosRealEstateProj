@@ -4,12 +4,12 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { compare, hash } from 'bcryptjs';
 import { logError } from '@/lib/logger';
-import { apiLimiter } from '@/lib/rate-limit';
+import { authLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  const rateLimited = await apiLimiter(request);
+  const rateLimited = await authLimiter(request);
   if (rateLimited) return rateLimited;
 
   try {

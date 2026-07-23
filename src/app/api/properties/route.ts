@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { searchSchema } from '@/lib/validation';
+import { searchSchema, propertySchema } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { apiLimiter } from '@/lib/rate-limit';
@@ -125,7 +125,17 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    
+
+    const validation = propertySchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input provided', details: validation.error.issues.map(i => i.message) },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
+
     const brokerProfile = await prisma.brokerProfile.findUnique({
       where: { userId: (session.user as any).id },
     });
@@ -137,22 +147,22 @@ export async function POST(request: NextRequest) {
     const property = await prisma.property.create({
       data: {
         brokerId: brokerProfile.id,
-        title: body.title,
-        description: body.description,
-        propertyType: body.propertyType,
-        price: body.price,
-        lotArea: body.lotArea,
-        floorArea: body.floorArea,
-        bedrooms: body.bedrooms,
-        bathrooms: body.bathrooms,
-        carGarage: body.carGarage,
-        address: body.address,
-        city: body.city,
-        province: body.province,
-        latitude: body.latitude,
-        longitude: body.longitude,
-        features: JSON.stringify(body.features || []),
-        images: JSON.stringify(body.images || []),
+        title: data.title,
+        description: data.description,
+        propertyType: data.propertyType,
+        price: data.price,
+        lotArea: data.lotArea,
+        floorArea: data.floorArea,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        carGarage: data.carGarage,
+        address: data.address,
+        city: data.city,
+        province: data.province,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        features: JSON.stringify(data.features || []),
+        images: JSON.stringify(data.images || []),
       },
       include: { broker: { include: { user: { select: safeUserSelect } } } },
     });

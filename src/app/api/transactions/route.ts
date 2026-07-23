@@ -107,8 +107,8 @@ export async function POST(request: NextRequest) {
       },
       include: {
         property: true,
-        broker: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } },
-        client: { include: { user: { select: { id: true, email: true, name: true, role: true, isVerified: true, isActive: true, createdAt: true, updatedAt: true } } } },
+        broker: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
+        client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
       },
     });
     
