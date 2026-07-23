@@ -29,13 +29,17 @@
 ### Authentication & Security
 - **JWT Authentication** — Secure login/register with bcrypt password hashing
 - **Role-Based Access Control (RBAC)** — Admin, Broker, Appraiser, and Client roles
-- **10-Layer Security Stack** — CSRF protection, rate limiting, input sanitization, HMAC API signing
+- **Email Verification** — Mandatory email verification before account activation
+- **Password Reset** — Secure token-based password reset with 1-hour expiry
+- **Account Lockout** — Automatic 15-minute lockout after 5 failed login attempts
+- **11-Layer Security Stack** — CSRF protection, rate limiting, input sanitization, HMAC API signing, audit logging
 - **Cloudflare Turnstile CAPTCHA** — Bot protection on registration and contact forms
-- **Audit Logging** — Complete audit trail of user actions with IP and user agent tracking
-- **Session Management** — Server-side session tokens with expiration
+- **DB Audit Logging** — Complete audit trail of all security events stored in PostgreSQL
+- **Session Management** — Secure JWT sessions with `__Secure-` cookie prefix in production
 - **Server-Side Review Authentication** — Reviews require signed-in users to prevent fake review injection
-- **Full Zod Validation** — Property creation endpoint now validates all input via Zod schemas
-- **Brute-Force Rate Limiting** — Password change uses stricter authLimiter (10/15min) instead of generic API limiter
+- **Full Zod Validation** — Property creation endpoint validates all input via Zod schemas
+- **Brute-Force Rate Limiting** — Password change uses stricter authLimiter (10/15min)
+- **Security Headers** — X-Frame-Options, X-Content-Type-Options, Cache-Control, X-Request-Id
 
 ### User Experience
 - **Responsive Design** — Mobile-first responsive UI with Tailwind CSS
@@ -129,7 +133,7 @@ Copy `.env.example` to `.env.local` and fill in your values:
 ```
 NALBAP-App/
 ├── prisma/
-│   ├── schema.prisma          # Database schema (12 models)
+│   ├── schema.prisma          # Database schema (13 models)
 │   ├── seed-production.js     # Production seed (Nelson Aczon account)
 │   └── seed-test-accounts.js  # Test accounts (Client, Appraiser, Admin)
 ├── public/                    # Static assets
@@ -138,13 +142,13 @@ NALBAP-App/
 │   ├── app/
 │   │   ├── api/               # REST API routes
 │   │   │   ├── appraisals/    # Appraisal CRUD
-│   │   │   ├── auth/          # Login, register, NextAuth
+│   │   │   ├── auth/          # Login, register, verify-email, forgot-password, reset-password, change-password, NextAuth
 │   │   │   ├── contact/       # Contact form submission
 │   │   │   ├── health/        # Health check endpoint
 │   │   │   ├── properties/    # Property CRUD
 │   │   │   ├── reviews/       # Review system
 │   │   │   └── transactions/  # Transaction management
-│   │   ├── auth/              # Auth pages (login, register, error)
+│   │   ├── auth/              # Auth pages (login, register, forgot-password, reset-password, error)
 │   │   ├── dashboard/         # Dashboard (properties, transactions, inquiries, profile)
 │   │   ├── faq/               # FAQ page
 │   │   ├── privacy/           # Privacy policy
@@ -158,14 +162,16 @@ NALBAP-App/
 │   │   ├── ContactForm.tsx
 │   │   ├── Navbar.tsx
 │   │   ├── Providers.tsx
+│   │   ├── SessionTimeout.tsx
 │   │   ├── ThemeToggle.tsx
-│   │   └── Turnstile.tsx
+│   │   ├── Turnstile.tsx
+│   │   └── Chatbot.tsx
 │   ├── lib/                   # Utility modules
-│   │   ├── auth.ts            # Authentication helpers
+│   │   ├── auth.ts            # NextAuth + account lockout
 │   │   ├── crypto.ts          # Encryption utilities
-│   │   ├── email.ts           # SMTP email sender
+│   │   ├── email.ts           # SMTP email (verification, password reset, notifications)
 │   │   ├── env.ts             # Environment variable validation
-│   │   ├── logger.ts          # Structured logging
+│   │   ├── logger.ts          # Structured logging + DB audit trail
 │   │   ├── prisma.ts          # Prisma client singleton
 │   │   ├── rate-limit.ts      # Rate limiting middleware
 │   │   ├── sanitize.ts        # Input sanitization
@@ -175,13 +181,7 @@ NALBAP-App/
 │   ├── styles/                # Global styles
 │   └── types/                 # TypeScript type definitions
 ├── tests/                     # Test files
-│   └── unit/                  # Unit tests
-├── docs/                      # Project documentation
-│   ├── 01-vision-mission/
-│   ├── 02-business-model/
-│   ├── 11-api-specification/
-│   ├── 12-security/
-│   └── ...                    # 19 documentation sections
+├── docs/                      # Project documentation (19 sections)
 ├── .env.example               # Environment variable template
 ├── .gitignore
 ├── Build-and-Run.bat          # Windows build script
@@ -203,6 +203,9 @@ NALBAP-App/
 |--------|----------|-------------|---------------|
 | `GET` | `/api/health` | Health check | No |
 | `POST` | `/api/auth/register` | User registration | No |
+| `GET` | `/api/auth/verify-email` | Verify email address | No |
+| `POST` | `/api/auth/forgot-password` | Request password reset | No |
+| `POST` | `/api/auth/reset-password` | Reset password with token | No |
 | `POST` | `/api/auth/change-password` | Change password | Yes |
 | `GET/POST` | `/api/auth/[...nextauth]` | NextAuth handlers | No |
 | `GET` | `/api/properties` | List properties | No |
@@ -222,7 +225,7 @@ NALBAP-App/
 
 ## Security Features
 
-This platform implements a **10-layer security defense stack**:
+This platform implements an **11-layer security defense stack**:
 
 1. **Input Validation** — Zod schemas validate all incoming data
 2. **Input Sanitization** — XSS prevention on all user-generated content
@@ -233,16 +236,18 @@ This platform implements a **10-layer security defense stack**:
 7. **Role-Based Access Control** — Granular permission checks per endpoint
 8. **HMAC API Signing** — Request integrity verification via HMAC signatures
 9. **Cloudflare Turnstile** — Bot protection on sensitive forms
-10. **Audit Logging** — Complete trail of all user actions with IP and user agent
+10. **Audit Logging** — Complete trail of all security events with IP and user agent
+11. **DB Audit Persistence** — Security events stored permanently in PostgreSQL AuditLog table
 
 Additional protections:
-- Security headers via Next.js middleware (X-Frame-Options, CSP, etc.)
-- Server-side session management with token expiration
-- Environment variable validation at startup
+- Security headers via Next.js middleware (X-Frame-Options, CSP, X-Content-Type-Options, Cache-Control)
+- Secure cookie prefix (`__Secure-`) in production
+- Email verification required before account activation
+- Account lockout after 5 failed login attempts (15-minute cooldown)
+- Password reset tokens with 1-hour expiry and single-use validation
 - SQL injection prevention via Prisma ORM
-- Property creation input validation via Zod schemas (prevents unvalidated data insertion)
-- Review posting requires authentication (prevents fake review injection)
-- Transaction response data sanitization (strips internal user fields)
+- Environment variable validation at startup
+- IP spoofing protection via x-forwarded-for chain validation
 - Health endpoint minimizes information disclosure (returns status only)
 
 ---
